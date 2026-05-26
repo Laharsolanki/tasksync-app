@@ -3,6 +3,8 @@ import TaskList from "../components/TaskList";
 import "../App.css";
 import axios from "axios";
 
+const API = process.env.REACT_APP_API_URL;
+
 function Home() {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
@@ -11,7 +13,7 @@ function Home() {
 
   useEffect(() => {
     setLoading(true);
-    fetch("https://adaptable-gentleness-production.up.railway.app/api/tasks")
+    fetch(`${API}/api/tasks`)
       .then((res) => res.json())
       .then((data) => {
         setTasks(data);
@@ -27,7 +29,7 @@ function Home() {
   const addTask = () => {
     if (task.trim() === "") return;
 
-    fetch("https://adaptable-gentleness-production.up.railway.app/api/tasks", {
+    fetch(`${API}/api/tasks`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -44,12 +46,9 @@ function Home() {
   };
 
   const deleteTask = (taskId) => {
-    fetch(
-      `https://adaptable-gentleness-production.up.railway.app/api/tasks/${taskId}`,
-      {
-        method: "DELETE",
-      }
-    )
+    fetch(`${API}/api/tasks/${taskId}`, {
+      method: "DELETE",
+    })
       .then(() => {
         const updatedTasks = tasks.filter((task) => task._id !== taskId);
         setTasks(updatedTasks);
@@ -63,16 +62,13 @@ function Home() {
 
     const updatedCompletion = !task.completed;
 
-    fetch(
-      `https://adaptable-gentleness-production.up.railway.app/api/tasks/${taskId}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ completed: updatedCompletion }),
-      }
-    )
+    fetch(`${API}/api/tasks/${taskId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ completed: updatedCompletion }),
+    })
       .then((res) => res.json())
       .then((updatedTask) => {
         const updatedTasks = tasks.map((t) =>
@@ -85,9 +81,7 @@ function Home() {
 
   const restartDay = async () => {
     try {
-      await axios.delete(
-        "https://adaptable-gentleness-production.up.railway.app/api/tasks/clear-all"
-      );
+      await axios.delete(`${API}/api/tasks/clear-all`);
       setTasks([]);
       setHadTasksBefore(false);
     } catch (error) {
